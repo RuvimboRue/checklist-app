@@ -8,6 +8,8 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({}); // State for error messages
 
+  const isBrowser = typeof window !== 'undefined';
+
   const validate = () => {
     const newErrors = {};
 
@@ -68,7 +70,7 @@ const Signup = () => {
       <form
         onSubmit={handleSubmit}
         className={`bg-white p-8 rounded-lg shadow-lg shadow-gray-200 ${
-          window.innerWidth > 768 ? 'w-1/3' : 'w-full'
+          isBrowser && window.innerWidth > 768 ? 'w-1/3' : 'w-full'
         }`}
       >
         <h1 className="text-2xl font-semibold mb-4">Sign Up</h1>
