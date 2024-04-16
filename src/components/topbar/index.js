@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { UserButton } from "@clerk/nextjs";
 
 const TopBar = () => {
   const [username, setUsername] = useState('');
@@ -17,12 +18,12 @@ const TopBar = () => {
   };
 
   return (
-    <div className="bg-gray-800 text-white p-4">
+    <div className="bg-green-500 text-white p-4">
       <div className="flex justify-between items-center">
         <Link href="/">
           <p className="text-white font-bold text-xl">IT OPERATIONS</p>
         </Link>
-        <div className="relative">
+        {/* <div className="relative">
           <button className="flex items-center" onClick={toggleDropdown}>
             <span className="mr-2 text-white">Welcome {username}</span>
             <svg
@@ -65,7 +66,8 @@ const TopBar = () => {
               </Link>
             </div>
           )}
-        </div>
+        </div> */}
+        <UserButton/>
       </div>
     </div>
   );

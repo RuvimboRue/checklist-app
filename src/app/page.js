@@ -1,11 +1,22 @@
-import Login from './login/page';
+// import Login from './login/page';
 
-const Home = () => {
+// const Home = () => {
   
 
-  return (
-    <Login/>
-  );
-};
+//   return (
+//     <Login/>
+//   );
+// };
 
-export default Home;
+// export default Home;
+import Task from "./tasks/page";
+ 
+export default async function Home() {
+ 
+  return (
+    <div className="h-screen">
+     
+      <Task/>
+    </div>
+  )
+}

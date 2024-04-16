@@ -28,8 +28,6 @@ export default function handler(req, res) {
       const user = results[0];
       const userId = user.id;
 
-      // Store the userID in a session or cookie (not shown here for brevity)
-
       res.status(200).json({ message: 'Login successful', user: { id: userId, username: user.username } }); // Include username in response
     });
    

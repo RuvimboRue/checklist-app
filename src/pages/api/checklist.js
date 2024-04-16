@@ -106,5 +106,48 @@ export default function handler(req, res) {
       }
     });
   }
+  else if (req.method === 'PATCH') {
+    // Handle PATCH request to clear comments for all, daily, weekly, or monthly tasks
+    if (req.query.filter === 'all') {
+        connection.query('UPDATE checklist SET comment = NULL', function (error, results) {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal Server Error' });
+            } else {
+                res.status(200).json({ message: 'Comments for all tasks cleared successfully' });
+            }
+        });
+    } else if (req.query.filter === 'daily') {
+        connection.query('UPDATE checklist SET comment = NULL WHERE filter = "daily"', function (error, results) {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal Server Error' });
+            } else {
+                res.status(200).json({ message: 'Comments for daily tasks cleared successfully' });
+            }
+        });
+    } else if (req.query.filter === 'weekly') {
+        connection.query('UPDATE checklist SET comment = NULL WHERE filter = "weekly"', function (error, results) {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal Server Error' });
+            } else {
+                res.status(200).json({ message: 'Comments for weekly tasks cleared successfully' });
+            }
+        });
+    } else if (req.query.filter === 'monthly') {
+        connection.query('UPDATE checklist SET comment = NULL WHERE filter = "monthly"', function (error, results) {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Internal Server Error' });
+            } else {
+                res.status(200).json({ message: 'Comments for monthly tasks cleared successfully' });
+            }
+        });
+    } else {
+        // Handle invalid filter option
+        res.status(400).json({ message: 'Invalid filter option' });
+    }
+}
 
 }

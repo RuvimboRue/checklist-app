@@ -1,24 +1,23 @@
 "use client";
-import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+
 
 const Signup = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({}); // State for error messages
-
-  const isBrowser = typeof window !== 'undefined';
 
   const validate = () => {
     const newErrors = {};
 
-    if (!username) newErrors.username = 'Username is required';
+    if (!username) newErrors.username = "Username is required";
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Invalid email address';
+      newErrors.email = "Invalid email address";
     }
     if (!password || password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
+      newErrors.password = "Password must be at least 6 characters long";
     }
 
     setErrors(newErrors);
@@ -32,36 +31,35 @@ const Signup = () => {
   };
 
   const handleSubmit = async (event) => {
-    console.log("We rae here");
     event.preventDefault();
 
     if (!validate()) return; // Prevent submission if there are errors
 
     try {
-      const response = await fetch('/api/signup', {
-        method: 'POST',
+      const response = await fetch("/api/signup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        console.error('Error creating user:', await response.json());
+        console.error("Error creating user:", await response.json());
         // Display user-friendly error message (optional)
         return;
       }
 
       const data = await response.json();
       console.log(data.message); // Success message
-      alert('Account Created Successfully');
+      alert("Account Created Successfully");
 
-      setUsername('');
-      setEmail('');
-      setPassword('');
+      setUsername("");
+      setEmail("");
+      setPassword("");
     } catch (error) {
-      console.error('Error:', error);
-      // Display user-friendly error message (optional)
+      console.error("Error:", error);
+      alert("Error creating user");
     }
   };
 
@@ -70,7 +68,7 @@ const Signup = () => {
       <form
         onSubmit={handleSubmit}
         className={`bg-white p-8 rounded-lg shadow-lg shadow-gray-200 ${
-          isBrowser && window.innerWidth > 768 ? 'w-1/3' : 'w-full'
+          window.innerWidth > 768 ? "w-1/3" : "w-full"
         }`}
       >
         <h1 className="text-2xl font-semibold mb-4">Sign Up</h1>
@@ -88,6 +86,7 @@ const Signup = () => {
             required
           />
         </div>
+        {errors.username && <p className="text-red-500">{errors.username}</p>}
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium mb-2">
             Email
@@ -102,6 +101,7 @@ const Signup = () => {
             required
           />
         </div>
+        {errors.email && <p className="text-red-500">{errors.email}</p>}
         <div className="mb-4">
           <label htmlFor="password" className="block text-sm font-medium mb-2">
             Password
@@ -116,14 +116,15 @@ const Signup = () => {
             required
           />
         </div>
-        <Link href="/login">
+        {errors.password && <p className="text-red-500">{errors.password}</p>}
+        <div className="flex justify-end">
         <button
           type="submit"
           className="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-700"
         >
           Sign Up
         </button>
-        </Link>
+        </div>
       </form>
     </div>
   );

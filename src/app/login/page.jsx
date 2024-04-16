@@ -66,7 +66,7 @@ const Login = () => {
   return (
     <div className="flex h-screen items-center justify-center">
       <form onSubmit={handleSubmit} className={`bg-white p-8 rounded-lg shadow-lg shadow-gray-200 ${
-         isBrowser && window.innerWidth > 768 ? 'w-1/3' : 'w-full'
+         window.innerWidth > 768 ? 'w-1/3' : 'w-full'
         }`}
       >
         <h1 className="text-2xl font-semibold mb-4">Log In</h1>
