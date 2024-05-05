@@ -1,41 +1,43 @@
-// Import necessary modules
-import { NextResponse } from "next/server";
-import path from "path";
-import { writeFile } from "fs/promises";
+// pages/api/upload.js
 
-// Define the POST handler for the file upload
-export const POST = async (req, res) => {
-  // Parse the incoming form data
-  const formData = await req.formData();
+import multer from 'multer';
+import { join } from 'path';
 
-  // Get the file from the form data
-  const file = formData.get("file");
+// Configure multer storage
+const storage = multer.diskStorage({
+  destination: join(process.cwd(), 'public', 'images'),
+  filename: (req, file, callback) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const extension = file.originalname.split('.').pop();
+    callback(null, `${uniqueSuffix}.${extension}`);
+  },
+});
 
-  // Check if a file is received
-  if (!file) {
-    // If no file is received, return a JSON response with an error and a 400 status code
-    return NextResponse.json({ error: "No files received." }, { status: 400 });
+// Create multer instance
+const upload = multer({ storage });
+
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    // Use the multer middleware to handle file upload
+    upload.single('file')(req, res, (err) => {
+      if (err) {
+        console.error('Error uploading file:', err);
+        return res.status(500).json({ error: 'Error uploading file' });
+      }
+
+      const { file } = req;
+
+      if (!file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      const { filename, path } = file;
+
+      // Do any necessary processing or validation with the uploaded file
+
+      return res.status(200).json({ filename, path });
+    });
+  } else {
+    res.status(405).json({ error: 'Method not allowed' });
   }
-
-  // Convert the file data to a Buffer
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  // Replace spaces in the file name with underscores
-  const filename = file.name.replaceAll(" ", "_");
-  console.log(filename);
-
-  try {
-    // Write the file to the specified directory (public/assets) with the modified filename
-    await writeFile(
-      path.join(process.cwd(), "public/assets/" + filename),
-      buffer
-    );
-
-    // Return a JSON response with a success message and a 201 status code
-    return NextResponse.json({ Message: "Success", status: 201 });
-  } catch (error) {
-    // If an error occurs during file writing, log the error and return a JSON response with a failure message and a 500 status code
-    console.log("Error occurred ", error);
-    return NextResponse.json({ Message: "Failed", status: 500 });
-  }
-};
+}

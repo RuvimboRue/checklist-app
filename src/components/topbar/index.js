@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image'
 import { UserButton } from "@clerk/nextjs";
 
 const TopBar = () => {
@@ -19,7 +20,9 @@ const TopBar = () => {
 
   return (
     <div className="bg-green-500 text-white p-4">
+      
       <div className="flex justify-between items-center">
+      
         <Link href="/">
           <p className="text-white font-bold text-xl">IT OPERATIONS</p>
         </Link>
