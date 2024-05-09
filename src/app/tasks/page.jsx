@@ -13,10 +13,11 @@ const Task = () => {
   const [items, setItems] = useState([]);
   const [comments, setComments] = useState({});
   const [filterOption, setFilterOption] = useState('all');
-  const [filePreviews, setFilePreviews] = useState(() => {
-    const storedFilePreviews = localStorage.getItem('filePreviews');
-    return storedFilePreviews ? JSON.parse(storedFilePreviews) : {};
-  });
+
+ const [filePreviews, setFilePreviews] = useState(() => {
+  const storedFilePreviews = localStorage.getItem('filePreviews');
+  return storedFilePreviews ? JSON.parse(storedFilePreviews) : {};
+});
   const [commentsCleared, setCommentsCleared] = useState(() => {
     const storedCommentsCleared = localStorage.getItem('commentsCleared');
     return storedCommentsCleared ? JSON.parse(storedCommentsCleared) : false;
@@ -78,13 +79,13 @@ const Task = () => {
     console.log(items); // Log the updated value of items
   }, [items]);
   
-  const handleEditItem = (id, newComment) => {
+  const handleEditItem = (id, newComment, checkbox = 1) => {
     fetch(`/api/checklist?id=${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ comment: newComment }),
+      body: JSON.stringify({ comment: newComment, checkbox }), // Pass checkbox value
     })
       .then((response) => response.json())
       .then(() => {
@@ -96,10 +97,12 @@ const Task = () => {
       .catch((error) => console.error(error));
   };
   
+  
+  
+  
   const handleCommentChange = (id, newComment) => {
     setComments({ ...comments, [id]: newComment });
   };
-
   const handleClearComments = (filter) => {
     fetch(`/api/checklist/?filter=${filter}`, {
       method: 'PATCH',
@@ -107,17 +110,36 @@ const Task = () => {
       .then((response) => response.json())
       .then((data) => {
         setCommentsCleared(true);
-        setCheckedItems({});
         setShowUserDetails({});
         setHiddenUploadItems({});
         setFilePreviews({});
         fetch(`/api/checklist?filter=${filterOption}`)
           .then((response) => response.json())
-          .then((data) => setItems(data))
+          .then((data) => {
+            setItems(data);
+            // Update the checkbox field to 0 for all cleared items
+            data.forEach((item) => {
+              if (checkedItems[item.id]) {
+                handleEditItem(item.id, item.comment, 0); // Pass 0 as the checkbox value
+                setCheckedItems({ ...checkedItems, [item.id]: false }); // Set checkbox value to false
+              }
+            });
+          })
           .catch((error) => console.error(error));
       })
       .catch((error) => console.error(error));
   };
+  const handleClearFilePreviews = () => {
+    setFilePreviews({}); // Clear the file previews
+  };
+  //to update
+  //another update
+  
+  useEffect(() => {
+    window.localStorage.setItem('filePreviews', JSON.stringify(filePreviews));
+  }, [filePreviews]);
+  
+  
 
   const handleFileSelection = (itemId, files) => {
     const file = files[0];
@@ -144,6 +166,8 @@ const Task = () => {
         className={`container border-black rounded-lg shadow-lg p-6 h-38 items-center mb-4 ${
           checkedItems[item.id] ? 'bg-green-300' : (commentsCleared ? 'bg-pink-200' : 'bg-pink-200')
         }`}
+      
+        
       >
         <div className='flex items-center text-extrabold'>
           <span className="ml-2 mb-2 font-bold">{item.item}</span>
