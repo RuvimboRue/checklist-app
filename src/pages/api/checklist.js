@@ -9,6 +9,7 @@ const connection = mysql.createConnection({
 
 export default function handler(req, res) {
   //functions for the checklist item
+  //update
   if (req.method === 'GET') {
     // Handle GET request to retrieve checklist items
     const { filter } = req.query;
@@ -74,25 +75,21 @@ export default function handler(req, res) {
       }
     });
   }else if (req.method === 'PUT') {
-    // Handle PUT request to edit a checklist item
-    const { id } = req.query; // Use req.query to access URL parameters
-    const { comment } = req.body;
-    const checkbox = 1; // Hardcoded checkbox value
-  
-    // Use prepared statement to prevent SQL injection
+    const { id } = req.query; 
+    const { comment, checkbox } = req.body; // Receive checkbox value
     const sql = `UPDATE checklist SET comment = ?, checkbox = ? WHERE id = ?`;
     connection.query(sql, [comment, checkbox, id], function (error, results) {
       if (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
       } else if (results.affectedRows === 0) {
-        // Check if any rows were affected (updated)
         res.status(404).json({ message: 'Item not found or not updated' });
       } else {
         res.status(200).json({ message: 'Item updated successfully' });
       }
     });
   }
+  
   else if (req.method === 'EDIT') {
     // Handle PUT request to edit a checklist item
     const { id } = req.query; // Use req.query to access URL parameters
