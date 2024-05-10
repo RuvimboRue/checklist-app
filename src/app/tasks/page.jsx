@@ -7,12 +7,18 @@ import Link from 'next/link';
 import User from '@/components/input';
 import { useUser } from '@clerk/clerk-react';
 import ChecklistPDF from '@/components/checklistpdf';
-import { CldUploadButton } from 'next-cloudinary';
+import { MdOutlineFileDownload } from "react-icons/md";
+import Modal from 'react-modal';
+
+
 
 const Task = () => {
   const [items, setItems] = useState([]);
   const [comments, setComments] = useState({});
   const [filterOption, setFilterOption] = useState('all');
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+const [selectedFileUrl, setSelectedFileUrl] = useState('');
+
 
  const [filePreviews, setFilePreviews] = useState(() => {
   const storedFilePreviews = localStorage.getItem('filePreviews');
@@ -174,10 +180,23 @@ const Task = () => {
         </div>
         <span className="ml-2 mb-2 font-light" onChange={handleCommentChange}>{item.comment}</span>
         {filePreviews[item.id] && (
-          <div>
-            <img src={filePreviews[item.id]} alt="File Preview" style={{ maxWidth: '100px' }} />
-          </div>
-        )}
+  <div>
+    <img
+      src={filePreviews[item.id]}
+      alt="File Preview"
+      style={{ maxWidth: '100px', cursor: 'pointer' }}
+      onClick={() => {
+        setSelectedFileUrl(filePreviews[item.id]);
+        setModalIsOpen(true);
+      }}
+    />
+
+    {/* Add download link */}
+    <Link href={filePreviews[item.id]} download >
+    <MdOutlineFileDownload />
+    </Link>
+  </div>
+)}
         {!hiddenUploadItems[item.id] && showUpload && (
           <div>
             <label htmlFor={`file-${item.id}`} className="block mb-2">
@@ -190,6 +209,25 @@ const Task = () => {
             />
           </div>
         )}
+            <Modal
+  isOpen={modalIsOpen}
+  onRequestClose={() => setModalIsOpen(false)}
+  ariaHideApp={false} // Disable aria-hidden warning
+  style={{
+    content: {
+      width: '300px',
+      height: '300px', 
+      margin: 'auto', 
+    },
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust the overlay color and opacity
+    },
+  }}
+>
+  <img src={selectedFileUrl} alt="Selected File" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+</Modal>
+
+
         <div className="flex items-end justify-end">
           <div className="flex items-center justify-center">
             <button
